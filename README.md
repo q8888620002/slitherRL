@@ -20,16 +20,11 @@ sudo apt-get update
 sudo apt-get install -y tmux htop cmake golang libjpeg-dev libgtk2.0-0 ffmpeg
 ```
 
-- Install universe installation dependencies
+- Install universe, universe installation dependencies
 ```
 pip install numpy
-```
+pip install universe
 
-- Install universe
-```
-git clone https://github.com/openai/universe.git
-cd universe
-pip install -e .
 ```
 - Install codebase and packages
 ```

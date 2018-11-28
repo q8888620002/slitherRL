@@ -1,0 +1,6 @@
+numpy 
+incremental
+tensorflow
+six
+scipy
+matplotlib

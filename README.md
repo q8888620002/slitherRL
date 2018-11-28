@@ -6,12 +6,12 @@
 
 - Create Conda env
 ```
-conda create --name rattle python=3.5
+conda create --name slither python=3.5
 ```
 
 - Activate a conda env
 ```
-source activate rattle
+source activate slither
 ```
 
 - Install needed packages

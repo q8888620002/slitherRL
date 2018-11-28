@@ -41,7 +41,6 @@ pip install -r requirements.txt
 
 Run the test agent script
 ```
-cd slitherRL
 python test.py
 ```
 you should see a tiny rendering of the game or "yay" on the command line.

@@ -34,8 +34,8 @@ pip install -e .
 - Install codebase and packages
 ```
 cd ..
-git clone https://github.com/zabarnes/RattLe.git
-cd RattLe
+git clone https://github.com/zabarnes/slitherRL.git
+cd slitherRL
 pip install -r requirements.txt
 ```
 

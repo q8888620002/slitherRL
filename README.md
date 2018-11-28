@@ -28,7 +28,6 @@ pip install universe
 ```
 - Install codebase and packages
 ```
-cd ..
 git clone https://github.com/q8888620002/slitherRL.git
 cd slitherRL
 pip install -r requirements.txt

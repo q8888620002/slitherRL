@@ -24,7 +24,6 @@ sudo apt-get install -y tmux htop cmake golang libjpeg-dev libgtk2.0-0 ffmpeg
 ```
 pip install numpy
 pip install universe
-
 ```
 - Install codebase and packages
 ```

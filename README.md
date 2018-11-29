@@ -33,7 +33,7 @@ cd slitherRL
 pip install -r requirements.txt
 ```
 
-- Install [docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04) for ubuntu 16.04 **MAKE SURE TO DO STEP 2 AS WELL**
+- Install [docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04) **MAKE SURE TO DO STEP 2 AS WELL**
 
 - Restart VM
 

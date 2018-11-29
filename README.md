@@ -1,7 +1,7 @@
 # RattLe: a Slither.io reinforcement learning agent
 ##### Based on the previous work of [slither-rl-agent](https://github.com/zachabarnes/slither-rl-agent)
 
-### Installation Instructions (meant for ubuntu VM):
+### Installation Instructions 
 - Install [Conda](https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04) for ubuntu 16.04
 
 - Create Conda env
@@ -14,7 +14,7 @@ conda create --name slither python=3.5
 source activate slither
 ```
 
-- Install needed packages
+- Install needed packages(meant for ubuntu VM):
 ```
 sudo apt-get update
 sudo apt-get install -y tmux htop cmake golang libjpeg-dev libgtk2.0-0 ffmpeg

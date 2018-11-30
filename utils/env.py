@@ -296,6 +296,7 @@ class SlitherProcessor(object):
     me_pix = np.count_nonzero(me_layer)
     food_pix = np.count_nonzero(food_layer)
 
+
     snake_perc = (num_pix - snake_pix)*1.0/num_pix
     food_perc = 1.0*food_pix/num_pix
     me_perc = 1.0*me_pix/num_pix
@@ -303,7 +304,7 @@ class SlitherProcessor(object):
     snake_inds = np.nonzero(snake_layer)
     snake_inds = zip(snake_inds[0].tolist(),snake_inds[1].tolist())
     food_inds = np.nonzero(food_layer)
-    snake_inds = zip(food_inds[0].tolist(),food_inds[1].tolist())
+    food_inds = zip(food_inds[0].tolist(),food_inds[1].tolist())
 
     snake_dis = min([self.d(i) for i in snake_inds])
     food_dis  = min([self.d(i) for i in food_inds])
@@ -311,11 +312,14 @@ class SlitherProcessor(object):
     min_snake = snake_dis*1.0/max_dis
     min_food  = 1.0*(max_dis - food_dis)/max_dis
 
-    features = np.array([me_perc,snake_perc,food_perc,min_snake,min_food])
+    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, food_dis])
+
     return features[:, np.newaxis, np.newaxis]
 
 
   def d(self, ind):
+    ### (15,25) is the center of the screen 
+
     return abs(15-ind[0]) + abs(25-ind[1])
 
 
@@ -328,7 +332,7 @@ def create_slither_env(state_type):
 
   env = BlockingReset(env)
   env = CropScreen(env, 300, 500, 84, 18)
-  env = DiscreteToFixedKeysVNCActions(env, ['left', 'right'])#['left', 'right', 'space', 'left space', 'right space'])
+  env = DiscreteToFixedKeysVNCActions(env, ['left', 'right', 'space', 'left space', 'right space'])
   env = EpisodeID(env)
   env = RenderWrapper(env, state_type)
   return env

@@ -10,8 +10,8 @@ from utils.env import create_slither_env
 from universe.wrappers import Unvectorize
 
 
-center_x = 150
-center_y = 250
+center_x = 268  
+center_y = 234
 # Game screen corners
 # ul_x = 20
 # ul_y = 85
@@ -47,10 +47,10 @@ action_sheet_init = []
 # We put all mouse positions in the action_sheet
 for point in range(resolution_points):
     degree = point*degree_per_slice
-    x_value_offset = radius * math.sin(math.radians(degree))
+    y_value_offset = radius * math.sin(math.radians(degree))
     x_value_offset = radius * math.cos(math.radians(degree))
-    coord = universe.spaces.PointerEvent(center_x + x_value_offset, center_y + x_value_offset, 0)
-    action_sheet.append((center_x + x_value_offset, center_y + x_value_offset))
+    coord = universe.spaces.PointerEvent(center_x + x_value_offset, center_y + y_value_offset, 0)
+    action_sheet.append((center_x + x_value_offset, center_y + y_value_offset))
     action_sheet_init.append(coord)
 
 

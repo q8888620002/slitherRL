@@ -302,18 +302,25 @@ class SlitherProcessor(object):
     me_perc = 1.0*me_pix/num_pix
 
     snake_inds = np.nonzero(snake_layer)
-    snake_inds = zip(snake_inds[0].tolist(),snake_inds[1].tolist())
+    snake_inds = list(zip(snake_inds[0].tolist(),snake_inds[1].tolist()))
 
     food_inds = np.nonzero(food_layer)
-    food_inds = zip(food_inds[0].tolist(),food_inds[1].tolist())
+    food_inds = list(zip(food_inds[0].tolist(),food_inds[1].tolist()))
+
     nearest_coord = self.get_closest_loc(food_inds)
 
     me_inds = np.nonzero(me_layer)
     me_inds = zip(me_inds[0].tolist(),me_inds[1].tolist())
 
-    snake_dis = min([self.d(i) for i in snake_inds], default= max_dis)
-    food_dis  = min([self.d(i) for i in food_inds],  default= max_dis)
+    if snake_inds:
+      snake_dis = min([self.d(i) for i in snake_inds])
+    else:
+      snake_dis = max_dis
 
+    if food_inds:
+      food_dis  = min([self.d(i) for i in food_inds])
+    else:
+      food_dis = max_dis
 
     min_snake = snake_dis*1.0/max_dis
     min_food  = 1.0*(max_dis - food_dis)/max_dis
@@ -325,7 +332,7 @@ class SlitherProcessor(object):
   def d(self, ind):
     ### (150,250) is the center of the screen 
 
-    return abs(250-ind[0]) + abs(250-ind[1])
+    return abs(268-ind[0]) + abs(234-ind[1])
 
   ### calculate the closest from the food list 
 
@@ -336,7 +343,7 @@ class SlitherProcessor(object):
 
     for ind in foodlist:
 
-      val = abs(250-ind[0]) + abs(250-ind[1])
+      val = abs(268-ind[0]) + abs(234-ind[1])
       ## get the food distance 
       if val < min_val:
         nearest_x = ind[0]

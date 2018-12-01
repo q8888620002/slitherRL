@@ -318,13 +318,12 @@ class SlitherProcessor(object):
     min_snake = snake_dis*1.0/max_dis
     min_food  = 1.0*(max_dis - food_dis)/max_dis
 
-    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, nearest_coord[0], nearest_coord[1]])
+    action = self.dodge_snake(snake_inds, food_inds)
+    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, action[0], action[1]])
 
     return features[:, np.newaxis, np.newaxis]
 
   def d(self, ind):
-    ### (150,250) is the center of the screen 
-
     return abs(268-ind[0]) + abs(234-ind[1])
 
   ### calculate the closest from the food list 
@@ -344,6 +343,14 @@ class SlitherProcessor(object):
         min_val = val
 
     return (nearest_x, nearest_y)
+
+    # if no snake in the frame, look for the closest food
+  def dodge_snake(self, snakelist, foodlist):
+    if snakelist:
+      nearest_coord_snake = self.get_closest_loc(snakelist)
+      return (268*2 - nearest_coord_snake[0], 234*2 - nearest_coord_snake[1])
+    else:
+      return self.get_closest_loc(foodlist)
 
 def create_slither_env(state_type):
   env = gym.make('internet.SlitherIO-v0')

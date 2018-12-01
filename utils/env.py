@@ -312,15 +312,8 @@ class SlitherProcessor(object):
     me_inds = np.nonzero(me_layer)
     me_inds = zip(me_inds[0].tolist(),me_inds[1].tolist())
 
-    if snake_inds:
-      snake_dis = min([self.d(i) for i in snake_inds])
-    else:
-      snake_dis = max_dis
-
-    if food_inds:
-      food_dis  = min([self.d(i) for i in food_inds])
-    else:
-      food_dis = max_dis
+    snake_dis = min([self.d(i) for i in snake_inds]) if snake_inds else max_dis
+    food_dis  = min([self.d(i) for i in food_inds]) if food_inds else max_dis 
 
     min_snake = snake_dis*1.0/max_dis
     min_food  = 1.0*(max_dis - food_dis)/max_dis

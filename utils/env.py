@@ -303,41 +303,47 @@ class SlitherProcessor(object):
 
     snake_inds = np.nonzero(snake_layer)
     snake_inds = zip(snake_inds[0].tolist(),snake_inds[1].tolist())
+
     food_inds = np.nonzero(food_layer)
-    snake_inds = zip(food_inds[0].tolist(),food_inds[1].tolist())
-    food_inds = snake_inds
-    
+    food_inds = zip(food_inds[0].tolist(),food_inds[1].tolist())
+    nearest_coord = self.get_closest_loc(food_inds)
+
     me_inds = np.nonzero(me_layer)
     me_inds = zip(me_inds[0].tolist(),me_inds[1].tolist())
 
-    snake_dis = min([self.d(i) for i in snake_inds])
+    snake_dis = min([self.d(i) for i in snake_inds], default= max_dis)
+    food_dis  = min([self.d(i) for i in food_inds],  default= max_dis)
 
-    nearest_x = 0
-    nearest_y = 0 
-    min_val = float("inf")
-
-    for ind in food_inds:
-      val = abs(50-ind[0]) + abs(250-ind[1])
-
-      ## get the food distance 
-      if val < min_val:
-        nearest_x = ind[0]
-        nearest_y = ind[1]
-
-    food_dis  = min([self.d(i) for i in food_inds])
 
     min_snake = snake_dis*1.0/max_dis
     min_food  = 1.0*(max_dis - food_dis)/max_dis
 
-    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, nearest_x, nearest_y])
+    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, nearest_coord[0], nearest_coord[1]])
 
     return features[:, np.newaxis, np.newaxis]
 
   def d(self, ind):
     ### (150,250) is the center of the screen 
 
-    return abs(150-ind[0]) + abs(250-ind[1])
+    return abs(250-ind[0]) + abs(250-ind[1])
 
+  ### calculate the closest from the food list 
+
+  def get_closest_loc(self, foodlist):
+    nearest_x = 1
+    nearest_y = 2 
+    min_val = 10000
+
+    for ind in foodlist:
+
+      val = abs(250-ind[0]) + abs(250-ind[1])
+      ## get the food distance 
+      if val < min_val:
+        nearest_x = ind[0]
+        nearest_y = ind[1]
+        min_val = val
+
+    return (nearest_x, nearest_y)
 
 def create_slither_env(state_type):
   env = gym.make('internet.SlitherIO-v0')

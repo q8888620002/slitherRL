@@ -5,6 +5,7 @@ import math
 import numpy as np
 import random 
 
+from agent import ApproximateQAgent
 from utils.env import create_slither_env
 from universe.wrappers import Unvectorize
 
@@ -51,17 +52,7 @@ for point in range(resolution_points):
     coord = universe.spaces.PointerEvent(center_x + x_value_offset, center_y + x_value_offset, 0)
     action_sheet.append((center_x + x_value_offset, center_y + x_value_offset))
     action_sheet_init.append(coord)
-print("action sheet", action_sheet_init)
 
-def get_actions(outputs):
-    actions = []
-    for i in range(len(outputs)):
-        if outputs[i] > 0.5:
-            actions.append(action_sheet[i])
-        else:
-            actions.append(universe.spaces.PointerEvent(center_x, center_y, 0))
-
-    return actions
 
 def get_best(loc):
 
@@ -78,9 +69,8 @@ def get_best(loc):
     return best_act
 
 
-
 if __name__ == '__main__':
-
+ 
   # Create customized and processed slither env
   #universe.configure_logging(False)
   env = create_slither_env('features')

@@ -44,12 +44,13 @@ class ApproximateQAgent(object):
           Should return Q(state,action) = w * featureVector
         """
         val = 0 
-        print(features)
         for f in self.features:
           val += features[f] * self.weights[action][f]
         return val
 
-
+    def getWeight(self):
+        for a in self.weights:
+          print(a)
         ## Return the arg_max q value of next state 
 
     def getMaxQ(self, features):
@@ -70,6 +71,7 @@ class ApproximateQAgent(object):
         """
         difference = reward + self.discount * self.getMaxQ(features) - self.getQValue(action, features)
         
+
         for f in features: 
           self.weights[action][f] += self.alpha * features[f] * difference
 

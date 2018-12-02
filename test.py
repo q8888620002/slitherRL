@@ -72,17 +72,8 @@ if __name__ == '__main__':
   features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
 
   learning_agent = ApproximateQAgent()
-  test_features = [2.29333333e-03, 1.00000000e+00 ,1.22200000e-02 ,1.00000000e+00, 9.40000000e-01]
-  new_features = dict()
-  action = random.choice(action_sheet)
-
-  for i in range(len(features_index)):
-    new_features[features_index[i]] = test_features[i]
-
-  print("new is ",features_index)
-  learning_agent.update(action ,1, new_features)
-
-  action = learning_agent.getAction(new_features)
+  
+  action_coord = random.choice(action_sheet)
 
   env = create_slither_env('features')
   env = Unvectorize(env)
@@ -92,25 +83,23 @@ if __name__ == '__main__':
 
 
   while True:
-    action = get_best((observation_n[5,0,0],observation_n[6,0,0]))
+    #action = get_best((observation_n[5,0,0],observation_n[6,0,0]))
     ### design action that would decrease min_food 
-    action = universe.spaces.PointerEvent(observation_n[5,0,0],observation_n[6,0,0],0)
-
+    action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
     observation_n, reward_n, done_n, info = env.step([action])
 
     #me_perc , snake_perc, food_perc, min_snake, min_food,
 
     features = observation_n.flatten()
-    print(features)
     new_features = dict()
 
     for i in range(len(features_index)):
 
       new_features[features_index[i]] = features[i]
-
-    learning_agent.update(action ,reward_n, features)
-
-    action = learning_agent.getAction(new_features)
+    learning_agent.update(action_coord ,reward_n, new_features)
+    action_coord = learning_agent.getAction(new_features)
+    
+    learning_agent.getWeight()
 
     env.render()
 

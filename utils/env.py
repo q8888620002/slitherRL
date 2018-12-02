@@ -324,7 +324,7 @@ class SlitherProcessor(object):
     return features[:, np.newaxis, np.newaxis]
 
   def d(self, ind):
-    return abs(268-ind[0]) + abs(234-ind[1])
+    return abs(270-ind[0]) + abs(235-ind[1])
 
   ### calculate the closest from the food list 
 
@@ -335,7 +335,7 @@ class SlitherProcessor(object):
 
     for ind in foodlist:
 
-      val = abs(268-ind[0]) + abs(234-ind[1])
+      val = abs(270-ind[0]) + abs(235-ind[1])
       ## get the food distance 
       if val < min_val:
         nearest_x = ind[0]
@@ -352,6 +352,35 @@ class SlitherProcessor(object):
     else:
       return self.get_closest_loc(foodlist)
 
+class MaxAndSkipEnv(gym.Wrapper):
+    def __init__(self, env, skip=4):
+        """Return only every `skip`-th frame"""
+        gym.Wrapper.__init__(self, env)
+        # most recent raw observations (for max pooling across time steps)
+        self._obs_buffer = np.zeros((2,)+env.observation_space.shape, dtype=np.uint8)
+        self._skip       = skip
+
+    def step(self, action):
+        """Repeat action, sum reward, and max over last observations."""
+        total_reward = 0.0
+        done = None
+        for i in range(self._skip):
+            obs, reward, done, info = self.env.step(action)
+            if i == self._skip - 2: self._obs_buffer[0] = obs
+            if i == self._skip - 1: self._obs_buffer[1] = obs
+            total_reward += reward
+            if done:
+                break
+        # Note that the observation on the done=True frame
+        # doesn't matter
+        max_frame = self._obs_buffer.max(axis=0)
+
+        return max_frame, total_reward, done, info
+
+    def reset(self, **kwargs):
+        return self.env.reset(**kwargs)
+
+
 def create_slither_env(state_type):
   env = gym.make('internet.SlitherIO-v0')
   env = Vision(env)
@@ -360,6 +389,7 @@ def create_slither_env(state_type):
   #env = Logger(env)
 
   env = BlockingReset(env)
+
   env = CropScreen(env, 300, 500, 84, 18)
   #env = DiscreteToFixedKeysVNCActions(env, ['left', 'right', 'space', 'left space', 'right space'])
   env = EpisodeID(env)

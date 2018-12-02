@@ -10,18 +10,9 @@ from utils.env import create_slither_env
 from universe.wrappers import Unvectorize
 
 
-center_x = 268  
-center_y = 234
-# Game screen corners
-# ul_x = 20
-# ul_y = 85
-# lr_x = 520
-# lr_y = 385
-# The above bound might be too big so I just +-100 the center_x and center_y
-ul_x = 50
-ul_y = 150
-lr_x = 250
-lr_y = 350
+center_x = 270  
+center_y = 235
+
 
 # The snake moves to the directing of the mouse
 # but to output the direction to a neural network we need to break the output to more discrete values
@@ -51,12 +42,14 @@ for point in range(resolution_points):
     x_value_offset = radius * math.cos(math.radians(degree))
     coord = universe.spaces.PointerEvent(center_x + x_value_offset, center_y + y_value_offset, 0)
     action_sheet.append((center_x + x_value_offset, center_y + y_value_offset))
+
+
     action_sheet_init.append(coord)
 
 
 def get_best(loc):
 
-    min_dis = float("inf")
+    min_dis = 1000
     best_act = None
     print("this min food is ", loc)
 
@@ -65,6 +58,7 @@ def get_best(loc):
 
       if (dis < min_dis):
         best_act = universe.spaces.PointerEvent(i[0], i[1], 0)
+        min_dis = dis
     print("the best action is", best_act)
     return best_act
 
@@ -73,22 +67,50 @@ if __name__ == '__main__':
  
   # Create customized and processed slither env
   #universe.configure_logging(False)
+
+  ### init the q learning agent
+  features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
+
+  learning_agent = ApproximateQAgent()
+  test_features = [2.29333333e-03, 1.00000000e+00 ,1.22200000e-02 ,1.00000000e+00, 9.40000000e-01]
+  new_features = dict()
+  action = random.choice(action_sheet)
+
+  for i in range(len(features_index)):
+    new_features[features_index[i]] = test_features[i]
+
+  print("new is ",features_index)
+  learning_agent.update(action ,1, new_features)
+
+  action = learning_agent.getAction(new_features)
+
   env = create_slither_env('features')
   env = Unvectorize(env)
   env.configure(fps=5.0, remotes=1, start_timeout=15 * 60, vnc_driver='go', vnc_kwargs={'encoding': 'tight', 'compress_level': 0, 'fine_quality_level': 50})
 
   observation_n = env.reset()
 
-  action = random.choice(action_sheet_init)
 
   while True:
-
+    action = get_best((observation_n[5,0,0],observation_n[6,0,0]))
     ### design action that would decrease min_food 
     action = universe.spaces.PointerEvent(observation_n[5,0,0],observation_n[6,0,0],0)
 
     observation_n, reward_n, done_n, info = env.step([action])
 
+    #me_perc , snake_perc, food_perc, min_snake, min_food,
 
-    
+    features = observation_n.flatten()
+    print(features)
+    new_features = dict()
+
+    for i in range(len(features_index)):
+
+      new_features[features_index[i]] = features[i]
+
+    learning_agent.update(action ,reward_n, features)
+
+    action = learning_agent.getAction(new_features)
+
     env.render()
 

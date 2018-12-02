@@ -66,11 +66,9 @@ class ApproximateQAgent(object):
 
     def update(self, action, reward, features):
         """
-           Should update your weights based on transition
-           TODO: how to get argmax(nextQ)
+           Should update the weights based on transition
         """
         difference = reward + self.discount * self.getMaxQ(features) - self.getQValue(action, features)
-        
 
         for f in features: 
           self.weights[action][f] += self.alpha * features[f] * difference

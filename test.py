@@ -46,58 +46,43 @@ for point in range(resolution_points):
 
     action_sheet_init.append(coord)
 
+### Convert observation numpy array into dictionary form with index 
+### ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
 
-def get_best(loc):
+def dict_convert(features):
 
-    min_dis = 1000
-    best_act = None
-    print("this min food is ", loc)
+    new_features = dict()
+    features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
 
-    for i in action_sheet:
-      dis = abs(loc[0] - i[0]) + abs(loc[1] -i[1])
+    for i in range(len(features_index)):
+      new_features[features_index[i]] = features[i]
 
-      if (dis < min_dis):
-        best_act = universe.spaces.PointerEvent(i[0], i[1], 0)
-        min_dis = dis
-    print("the best action is", best_act)
-    return best_act
-
+    return new_features
 
 if __name__ == '__main__':
  
   # Create customized and processed slither env
   #universe.configure_logging(False)
-
-  ### init the q learning agent
-  features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
-
-  learning_agent = ApproximateQAgent()
   
-  action_coord = random.choice(action_sheet)
-
   env = create_slither_env('features')
   env = Unvectorize(env)
   env.configure(fps=5.0, remotes=1, start_timeout=15 * 60, vnc_driver='go', vnc_kwargs={'encoding': 'tight', 'compress_level': 0, 'fine_quality_level': 50})
 
   observation_n = env.reset()
 
+  ## init the q learning agent
+  learning_agent = ApproximateQAgent()
+  ## randomly init an array
+  action_coord = random.choice(action_sheet)
 
   while True:
-    #action = get_best((observation_n[5,0,0],observation_n[6,0,0]))
-    ### design action that would decrease min_food 
     action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
     observation_n, reward_n, done_n, info = env.step([action])
 
-    #me_perc , snake_perc, food_perc, min_snake, min_food,
+    features = dict_convert(observation_n.flatten())
 
-    features = observation_n.flatten()
-    new_features = dict()
-
-    for i in range(len(features_index)):
-
-      new_features[features_index[i]] = features[i]
-    learning_agent.update(action_coord ,reward_n, new_features)
-    action_coord = learning_agent.getAction(new_features)
+    learning_agent.update(action_coord ,reward_n, features)
+    action_coord = learning_agent.getAction(features)
     
     learning_agent.getWeight()
 

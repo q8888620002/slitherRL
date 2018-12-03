@@ -52,7 +52,7 @@ for point in range(resolution_points):
 def dict_convert(features):
 
     new_features = dict()
-    features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
+    features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
 
     for i in range(len(features_index)):
       new_features[features_index[i]] = features[i]
@@ -77,13 +77,11 @@ if __name__ == '__main__':
 
   while True:
     action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
+
     observation_n, reward_n, done_n, info = env.step([action])
-
     features = dict_convert(observation_n.flatten())
-
-    learning_agent.update(action_coord ,reward_n, features)
+    learning_agent.update(action_coord ,reward_n, features, done_n)
     action_coord = learning_agent.getAction(features)
-    
     learning_agent.getWeight()
 
     env.render()

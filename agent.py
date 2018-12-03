@@ -20,9 +20,9 @@ class ApproximateQAgent(object):
         #   *   s   *
         #     *   *
         #       *
-        self.features = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
+        self.features = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
         self.resolution_points = 8
-        self.degree_per_slice = 360//self.resolution_points
+        self.degree_per_slice = 360/self.resolution_points
 
         # Available actions in the game
         self.actions = []
@@ -38,6 +38,15 @@ class ApproximateQAgent(object):
 
         for a in self.actions:
             self.weights[a] = Counter()
+            for f in range(len(self.features)):
+              self.weights[a][f] = 1
+
+        for a in self.actions:
+          self.weights[a][4] = 100
+          self.weights[a][5] = 100
+          self.weights[a][6] = 100
+          self.weights[a][7] = 100
+          self.weights[a][8] = 100
 
     def getQValue(self, action, features):
         """
@@ -49,40 +58,36 @@ class ApproximateQAgent(object):
         return val
 
     def getWeight(self):
-        for a in self.weights:
-          print(a)
+        for a in self.actions:
+          print("state:  ", a)
+          for f in self.features:
+            print(f, self.weights[a][f])
         ## Return the arg_max q value of next state 
 
     def getMaxQ(self, features):
-        max_q = 0 
-
-        for a in self.actions:
-          new_q = self.getQValue(a, features)
-          if new_q > max_q:
-            max_q = new_q
-
-        return max_q
+        max_a =  max(self.actions, key = lambda a: self.getQValue(a, features))
+        return self.getQValue(max_a, features)
 
 
-    def update(self, action, reward, features):
+    def update(self, action, reward, features, done):
         """
            Should update the weights based on transition
         """
-        difference = reward + self.discount * self.getMaxQ(features) - self.getQValue(action, features)
+        reward_n = reward
+        if done:
+          reward_n = -100
+        else:
+          if reward == 0:
+            reward_n = reward * 10
 
+        difference = reward_n + self.discount * self.getMaxQ(features) - self.getQValue(action, features)
         for f in features: 
           self.weights[action][f] += self.alpha * features[f] * difference
 
       ### Return the best action according to the current feature
     def getAction(self, features):
-        action = None
-        max_q = 0
-        for a in self.actions:
-          new_q = self.getQValue(a, features)
-          if new_q > max_q:
-            max_q = new_q
-            action = a 
-        return a
+        # return the action with the max q value
+        return max(self.actions, key = lambda a: self.getQValue(a, features))
 
 
 

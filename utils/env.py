@@ -319,8 +319,9 @@ class SlitherProcessor(object):
     min_snake = snake_dis*1.0/max_dis
     min_food  = 1.0*(max_dis - food_dis)/max_dis
 
-    action = self.dodge_snake(snake_inds, food_inds)
-    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, action[0], action[1]])
+    food_dir = self.food_density(food_inds)
+
+    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, food_dir[0], food_dir[1], food_dir[2], food_dir[3]])
 
     return features[:, np.newaxis, np.newaxis]
 
@@ -351,6 +352,27 @@ class SlitherProcessor(object):
       return (268*2 - nearest_coord_snake[0], 234*2 - nearest_coord_snake[1])
     else:
       return self.get_closest_loc(foodlist)
+
+  def food_density(self, foodlist):
+    # frame edge points: (18, 84), (518, 84), (18, 384), (518, 384)
+    direction = [0] * 4
+
+    # cut the frame into 4 bins by the middle point and bin the food
+    for f in foodlist:
+      if f[0] > 268:
+        if f[1] > 234:
+          direction[3] += 1
+        else:
+          direction[1] += 1
+      else:
+        if f[1] > 234:
+          direction[2] += 1
+        else:
+          direction[0] += 1
+
+    # normalize the food density
+    direction = [float(i)/sum(direction) for i in direction]
+    return direction
 
 class MaxAndSkipEnv(gym.Wrapper):
     def __init__(self, env, skip=4):

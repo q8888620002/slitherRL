@@ -56,6 +56,7 @@ class SimpleImageViewer(object):
 
 class CropScreen(vectorized.ObservationWrapper):
   def __init__(self, env, height, width, top=0, left=0):
+    """Crops out a [height]x[width] area starting from (top,left) """
     super(CropScreen, self).__init__(env)
     self.height = height
     self.width = width
@@ -326,8 +327,7 @@ class SlitherProcessor(object):
   def d(self, ind):
     return abs(270-ind[0]) + abs(235-ind[1])
 
-  ### calculate the closest from the food list 
-
+  ### get the nearest item to the center(snake head)
   def get_closest_loc(self, foodlist):
     nearest_x = 1
     nearest_y = 2 

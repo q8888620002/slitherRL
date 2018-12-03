@@ -316,10 +316,10 @@ class SlitherProcessor(object):
     food_dis  = min([self.d(i) for i in food_inds]) if food_inds else max_dis 
 
     min_snake = snake_dis*1.0/max_dis
-    min_food  = 1.0*(max_dis - food_dis)/max_dis
+    min_food  = 1.0*(food_dis)/max_dis
 
     action = self.dodge_snake(snake_inds, food_inds)
-    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, action[0], action[1]])
+    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food])
 
     return features[:, np.newaxis, np.newaxis]
 

@@ -1,14 +1,22 @@
 from utils.utils import Counter
 import universe  # register the universe environments
 import math
+import numpy as np
+import pickle
 
 class ApproximateQAgent(object):
     """
        ApproximateQLearningAgent
     """
     def __init__(self):
-        self.weights =dict()
 
+        # Load
+
+
+        sotred_weights = open('weights.pickle', 'rb')
+        self.weights = pickle.load(sotred_weights)
+        sotred_weights.close()
+        print("previous weight is ", self.weights)
         self.center_x = 270
         self.center_y = 235
         self.radius = 30
@@ -21,8 +29,8 @@ class ApproximateQAgent(object):
         #     *   *
         #       *
         self.features = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
-        self.resolution_points = 8
-        self.degree_per_slice = 360//self.resolution_points
+        self.resolution_points = 36
+        self.degree_per_slice = 360/self.resolution_points
 
         # Available actions in the game
         self.actions = []
@@ -36,9 +44,6 @@ class ApproximateQAgent(object):
             coord = universe.spaces.PointerEvent(self.center_x + x_value_offset, self.center_y + y_value_offset, 0)
             self.actions.append((self.center_x + x_value_offset, self.center_y + y_value_offset))
 
-        for a in self.actions:
-            self.weights[a] = Counter()
-
     def getQValue(self, action, features):
         """
           Should return Q(state,action) = w * featureVector
@@ -48,13 +53,16 @@ class ApproximateQAgent(object):
           val += features[f] * self.weights[action][f]
         return val
 
-    def getWeight(self):
-        for a in self.weights:
-          print(a)
+    def getWeight(self, action):
+        print("weight of ", action )
+        return self.weights[action]
+
+    def getWeights(self):
+        return self.weights
         ## Return the arg_max q value of next state 
 
     def getMaxQ(self, features):
-        max_q = 0 
+        max_q = -10000 
 
         for a in self.actions:
           new_q = self.getQValue(a, features)
@@ -73,18 +81,10 @@ class ApproximateQAgent(object):
         for f in features: 
           self.weights[action][f] += self.alpha * features[f] * difference
 
+
       ### Return the best action according to the current feature
     def getAction(self, features):
-        action = None
-        max_q = 0
-        for a in self.actions:
-          new_q = self.getQValue(a, features)
-          if new_q > max_q:
-            max_q = new_q
-            action = a 
-        return a
-
-
+        return max(self.actions, key = lambda a: self.getQValue(a, features))
 
 
 

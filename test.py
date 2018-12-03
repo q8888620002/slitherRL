@@ -4,6 +4,7 @@ import sys
 import math
 import numpy as np
 import random 
+import pickle
 
 from agent import ApproximateQAgent
 from utils.env import create_slither_env
@@ -28,8 +29,8 @@ radius = 30
 #     *   *
 #       *
 # You can add more resolution to this if you want but it may increase learning time
-resolution_points = 8
-degree_per_slice = 360//resolution_points
+resolution_points = 36
+degree_per_slice = 360/resolution_points
 
 # Available actions in the game
 action_sheet = []
@@ -72,19 +73,42 @@ if __name__ == '__main__':
 
   ## init the q learning agent
   learning_agent = ApproximateQAgent()
+  print("init a learning")
   ## randomly init an array
   action_coord = random.choice(action_sheet)
 
-  while True:
-    action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
-    observation_n, reward_n, done_n, info = env.step([action])
+  for i_episode in range(200):
+    for t in range(1000):
 
-    features = dict_convert(observation_n.flatten())
+      action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
+      observation_n, reward_n, done_n, info = env.step([action])
 
-    learning_agent.update(action_coord ,reward_n, features)
-    action_coord = learning_agent.getAction(features)
-    
-    learning_agent.getWeight()
+      if reward_n == 0:
+        reward_n = -1
+      else:
+        reward_n = reward_n * 2
+      if done_n:
+        reward_n = -50
 
-    env.render()
+      features = dict_convert(observation_n.flatten())
+
+      learning_agent.update(action_coord ,reward_n, features)
+      action_coord = learning_agent.getAction(features)
+      
+      print(learning_agent.getWeight(action_coord))
+
+      if done_n:
+        print("Episode finished after {} timesteps".format(t+1))
+        print((i_episode+1), "/", 200)
+
+        ## update every episode
+        stored_weights = open('weights.pickle', 'wb')
+        pickle.dump(learning_agent.getWeights(), stored_weights )
+        stored_weights.close()
+        print("update weights")
+
+        break
+
+  env.close()     
+
 

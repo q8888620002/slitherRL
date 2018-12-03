@@ -4,6 +4,7 @@ import sys
 import math
 import numpy as np
 import random 
+import time
 
 from agent import ApproximateQAgent
 from utils.env import create_slither_env
@@ -44,7 +45,7 @@ for point in range(resolution_points):
     action_sheet.append((center_x + x_value_offset, center_y + y_value_offset))
 
 
-    action_sheet_init.append(coord)
+    action_sheet_init.append(coord) 
 
 ### Convert observation numpy array into dictionary form with index 
 ### ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
@@ -52,7 +53,7 @@ for point in range(resolution_points):
 def dict_convert(features):
 
     new_features = dict()
-    features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
+    features_index = ['snake_dis', 'food_dis', 'snake_perc', 'food_perc', 'danger_snake']
 
     for i in range(len(features_index)):
       new_features[features_index[i]] = features[i]
@@ -66,25 +67,45 @@ if __name__ == '__main__':
   
   env = create_slither_env('features')
   env = Unvectorize(env)
+
   env.configure(fps=5.0, remotes=1, start_timeout=15 * 60, vnc_driver='go', vnc_kwargs={'encoding': 'tight', 'compress_level': 0, 'fine_quality_level': 50})
 
   observation_n = env.reset()
 
   ## init the q learning agent
   learning_agent = ApproximateQAgent()
+
   ## randomly init an array
   action_coord = random.choice(action_sheet)
+
+  start_time = []
+  nextstate = 2
+
+  coord=[]
+  for point in range(8):
+      degree = point*(360//8)
+      y = 30 * math.sin(math.radians(degree))
+      x = 30 * math.cos(math.radians(degree))
+      coord.append((270+x, 235+7))
 
   while True:
     action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
     observation_n, reward_n, done_n, info = env.step([action])
 
-    features = dict_convert(observation_n.flatten())
+    if done_n == True and start_time:
+      print("-----Game running time: %s seconds -----" % (time.time() - start_time)) 
+      start_time = time.time()
 
-    learning_agent.update(action_coord ,reward_n, features)
-    action_coord = learning_agent.getAction(features)
+    features = dict_convert(observation_n)
+
+    currentstate = nextstate
+    nextstate = learning_agent.getAction(features)
+    action_coord = coord[nextstate]
+    print('action: ', action_coord)
+    learning_agent.update(currentstate, reward_n, features)
     
-    learning_agent.getWeight()
+    #learning_agent.getWeight()
 
     env.render()
+
 

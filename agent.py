@@ -15,19 +15,21 @@ class ApproximateQAgent(object):
         # This is the number of points we want around the head of the snake
         # Ex: With 8 points where the mouse can be positioned around the head of the snake
         # Note the distance from the point to the head is the same for all
+        #       2
         #       *
-        #     *   *
-        #   *   s   *
-        #     *   *
+        #   3 *   * 1
+        # 4 *   s   * 0
+        #   5 *   * 7
         #       *
-        self.features = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
+        #       6
+        self.features = ['snake_dis', 'food_dis', 'snake_perc', 'food_perc', 'danger_snake']
         self.resolution_points = 8
         self.degree_per_slice = 360//self.resolution_points
 
         # Available actions in the game
         self.actions = []
-        self.discount = 0.8
-        self.alpha = 0.5
+        self.discount = 0.9
+        self.alpha = 0.2
         # We put all mouse positions in the action_sheet
         for point in range(self.resolution_points):
             degree = point*self.degree_per_slice
@@ -36,27 +38,27 @@ class ApproximateQAgent(object):
             coord = universe.spaces.PointerEvent(self.center_x + x_value_offset, self.center_y + y_value_offset, 0)
             self.actions.append((self.center_x + x_value_offset, self.center_y + y_value_offset))
 
-        for a in self.actions:
-            self.weights[a] = Counter()
+        self.weights = {'snake_dis': 1, 'food_dis': 1, 'snake_perc': -1, 'food_perc': 1, 'danger_snake': -10}
 
     def getQValue(self, action, features):
         """
           Should return Q(state,action) = w * featureVector
         """
         val = 0 
-        for f in self.features:
-          val += features[f] * self.weights[action][f]
+
+        for f in features:
+          val += features[f].flatten()[action] * self.weights[f]
         return val
 
     def getWeight(self):
         for a in self.weights:
-          print(a)
+          print('weight: ', a)
         ## Return the arg_max q value of next state 
 
     def getMaxQ(self, features):
         max_q = 0 
 
-        for a in self.actions:
+        for a in range(8):
           new_q = self.getQValue(a, features)
           if new_q > max_q:
             max_q = new_q
@@ -71,20 +73,19 @@ class ApproximateQAgent(object):
         difference = reward + self.discount * self.getMaxQ(features) - self.getQValue(action, features)
 
         for f in features: 
-          self.weights[action][f] += self.alpha * features[f] * difference
+          self.weights[f] += self.alpha * features[f].flatten()[action] * difference
+        print('weight:', self.weights)
 
       ### Return the best action according to the current feature
     def getAction(self, features):
-        action = None
+        action = 0
         max_q = 0
-        for a in self.actions:
+        for a in range(8):
           new_q = self.getQValue(a, features)
+          print('===', a, '===', new_q)
           if new_q > max_q:
             max_q = new_q
             action = a 
-        return a
-
-
-
+        return action
 
 

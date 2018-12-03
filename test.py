@@ -92,8 +92,9 @@ if __name__ == '__main__':
     action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
     observation_n, reward_n, done_n, info = env.step([action])
 
-    if done_n == True and start_time:
-      print("-----Game running time: %s seconds -----" % (time.time() - start_time)) 
+    if done_n == True:
+      if start_time:
+        print("-----Game running time: %s seconds -----" % (time.time() - start_time)) 
       start_time = time.time()
 
     features = dict_convert(observation_n)

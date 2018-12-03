@@ -28,8 +28,8 @@ class ApproximateQAgent(object):
 
         # Available actions in the game
         self.actions = []
-        self.discount = 0.9
-        self.alpha = 0.2
+        self.discount = 0.8
+        self.alpha = 0.5
         # We put all mouse positions in the action_sheet
         for point in range(self.resolution_points):
             degree = point*self.degree_per_slice
@@ -38,7 +38,7 @@ class ApproximateQAgent(object):
             coord = universe.spaces.PointerEvent(self.center_x + x_value_offset, self.center_y + y_value_offset, 0)
             self.actions.append((self.center_x + x_value_offset, self.center_y + y_value_offset))
 
-        self.weights = {'snake_dis': 1, 'food_dis': 1, 'snake_perc': -1, 'food_perc': 1, 'danger_snake': -10}
+        self.weights = {'snake_dis': 1, 'food_dis': 5, 'snake_perc': -1, 'food_perc': 10, 'danger_snake': 0}
 
     def getQValue(self, action, features):
         """
@@ -60,7 +60,8 @@ class ApproximateQAgent(object):
 
         for a in range(8):
           new_q = self.getQValue(a, features)
-          if new_q > max_q:
+          check = 0 if features['danger_snake'].flatten().all() == 1 else features['danger_snake'].flatten()[a]
+          if new_q > max_q and check==0:
             max_q = new_q
 
         return max_q
@@ -73,7 +74,8 @@ class ApproximateQAgent(object):
         difference = reward + self.discount * self.getMaxQ(features) - self.getQValue(action, features)
 
         for f in features: 
-          self.weights[f] += self.alpha * features[f].flatten()[action] * difference
+          if f !='danger_snake':
+            self.weights[f] += self.alpha * features[f].flatten()[action] * difference
         print('weight:', self.weights)
 
       ### Return the best action according to the current feature
@@ -82,8 +84,9 @@ class ApproximateQAgent(object):
         max_q = 0
         for a in range(8):
           new_q = self.getQValue(a, features)
-          print('===', a, '===', new_q)
-          if new_q > max_q:
+          check = 0 if features['danger_snake'].flatten().all() == 1 else features['danger_snake'].flatten()[a]
+          print('===', a, '===', new_q, check)
+          if new_q > max_q and check==0:
             max_q = new_q
             action = a 
         return action

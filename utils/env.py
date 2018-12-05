@@ -334,10 +334,10 @@ class SlitherProcessor(object):
     snake_perc, food_perc = self.get_perc_in_area(frame)
     danger_snake = self.snake_dis_in_area(snake_inds)
 
-    min_snake = snake_dis*1.0/max_dis
-    min_food  = 1.0*(max_dis - food_dis)/max_dis
+    #min_snake = snake_dis*1.0/max_dis
+    #min_food  = 1.0*(max_dis - food_dis)/max_dis
 
-    action = self.dodge_snake(snake_inds, food_inds)
+    #action = self.dodge_snake(snake_inds, food_inds)
     #features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, action[0], action[1]])
 
     features = np.array([snake_dis, food_dis, snake_perc, food_perc, danger_snake])
@@ -378,7 +378,7 @@ class SlitherProcessor(object):
     y = ([186,285],[85,234],[85,234],[85,234],[186,285],[236,385],[236,385],[236,385])
     action = list(range(8))
     done=[]
-    
+
     for ind in snake_inds:
       for a in action:
         if ind[0] in range(x[a][0],x[a][1]) and ind[1] in range(y[a][0], y[a][1]):

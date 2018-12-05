@@ -50,13 +50,11 @@ class ApproximateQAgent(object):
           val += features[f].flatten()[action] * self.weights[f]
         return val
 
-    def getWeight(self):
-        for a in self.weights:
-          print('weight: ', a)
-        ## Return the arg_max q value of next state 
+    def getWeights(self):
+         return self.weights
 
     def getMaxQ(self, features):
-        max_q = 0 
+        max_q = -float('inf')
 
         for a in range(8):
           new_q = self.getQValue(a, features)
@@ -81,7 +79,7 @@ class ApproximateQAgent(object):
       ### Return the best action according to the current feature
     def getAction(self, features):
         action = 0
-        max_q = 0
+        max_q = -float('inf')
         for a in range(8):
           new_q = self.getQValue(a, features)
           check = 0 if features['danger_snake'].flatten().all() == 1 else features['danger_snake'].flatten()[a]

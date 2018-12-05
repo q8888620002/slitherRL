@@ -5,6 +5,7 @@ import math
 import numpy as np
 import random 
 import time
+import pickle
 
 from agent import ApproximateQAgent
 from utils.env import create_slither_env
@@ -88,25 +89,42 @@ if __name__ == '__main__':
       x = 30 * math.cos(math.radians(degree))
       coord.append((270+x, 235+7))
 
-  while True:
-    action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
-    observation_n, reward_n, done_n, info = env.step([action])
 
-    if done_n == True:
-      if start_time:
-        print("-----Game running time: %s seconds -----" % (time.time() - start_time)) 
-      start_time = time.time()
-
-    features = dict_convert(observation_n)
-
-    currentstate = nextstate
-    nextstate = learning_agent.getAction(features)
-    action_coord = coord[nextstate]
-    print('action: ', action_coord)
-    learning_agent.update(currentstate, reward_n, features)
+  for i_episode in range(200):
+     for t in range(1000):
+       env.render() 
+       action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
+       observation_n, reward_n, done_n, info = env.step([action])
     
-    #learning_agent.getWeight()
+       if reward_n == 0:
+         reward_n = -1
+       else:
+         reward_n = reward_n * 2
+       if done_n:
+         reward_n = -50
 
-    env.render()
+       features = dict_convert(observation_n)
+
+       currentstate = nextstate
+       nextstate = learning_agent.getAction(features)
+       action_coord = coord[nextstate]
+       print('action: ', action_coord)
+       learning_agent.update(currentstate, reward_n, features)
+       
+       #print(learning_agent.getWeight(action_coord))
+
+       if done_n:
+         print("Episode finished after {} timesteps".format(t+1))
+         print((i_episode+1), "/", 200)
+
+         ## update every episode
+         stored_weights = open('weights.pickle', 'wb')
+         pickle.dump(learning_agent.getWeights(), stored_weights )
+         stored_weights.close()
+         print("update weights")
+
+         break
+
+  env.close() 
 
 

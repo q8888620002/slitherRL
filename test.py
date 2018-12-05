@@ -54,7 +54,7 @@ for point in range(resolution_points):
 def dict_convert(features):
 
     new_features = dict()
-    features_index = ['snake_dis', 'food_dis', 'snake_perc', 'food_perc', 'danger_snake']
+    features_index = ['snake_dis', 'food_dis', 'snake_perc', 'food_perc', 'snake_50', 'snake_100']
 
     for i in range(len(features_index)):
       new_features[features_index[i]] = features[i]

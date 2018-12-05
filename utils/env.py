@@ -321,9 +321,7 @@ class SlitherProcessor(object):
       x = 30 * math.cos(math.radians(degree))
       coord.append((270+x, 235+7))
 
-    snake_dis = np.zeros(8)
-    food_dis = np.zeros(8)
-    danger_snake = np.zeros(8)
+    snake_dis = food_dis = snake_50 = snake_100 = np.zeros(8)
 
     for state in range(8):
       snake_dis[state] = min([self.d(i, coord[state]) for i in snake_inds]) if snake_inds else max_dis
@@ -332,7 +330,8 @@ class SlitherProcessor(object):
       food_dis[state]  = 1.0*(max_dis - food_dis[state])/max_dis
 
     snake_perc, food_perc = self.get_perc_in_area(frame)
-    danger_snake = self.snake_dis_in_area(snake_inds)
+    snake_50 = self.snake_dis_in_area(snake_inds, 50)
+    snake_100 = self.snake_dis_in_area(snake_inds, 100)
 
     #min_snake = snake_dis*1.0/max_dis
     #min_food  = 1.0*(max_dis - food_dis)/max_dis
@@ -340,7 +339,7 @@ class SlitherProcessor(object):
     #action = self.dodge_snake(snake_inds, food_inds)
     #features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, action[0], action[1]])
 
-    features = np.array([snake_dis, food_dis, snake_perc, food_perc, danger_snake])
+    features = np.array([snake_dis, food_dis, snake_perc, food_perc, snake_50, snake_100])
 
     return features[:, np.newaxis, np.newaxis]
 
@@ -371,7 +370,7 @@ class SlitherProcessor(object):
     return snake_perc, food_perc
 
 
-  def snake_dis_in_area(self, snake_inds):
+  def snake_dis_in_area(self, snake_inds, dis):
     snake_dis = np.zeros(8)
 
     x = ([271,520],[271,520],[187,352],[20,269],[20,269],[20,269],[187,352],[271,520])
@@ -382,7 +381,7 @@ class SlitherProcessor(object):
     for ind in snake_inds:
       for a in action:
         if ind[0] in range(x[a][0],x[a][1]) and ind[1] in range(y[a][0], y[a][1]):
-          if self.e(ind) <100: 
+          if self.e(ind) <dis: 
             snake_dis[a] = 1
             done.append(a)
       action = list(set(action) - set(done))

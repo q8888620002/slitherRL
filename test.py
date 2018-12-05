@@ -4,6 +4,7 @@ import sys
 import math
 import numpy as np
 import random 
+import pickle
 
 from agent import ApproximateQAgent
 from utils.env import create_slither_env
@@ -52,7 +53,8 @@ for point in range(resolution_points):
 def dict_convert(features):
 
     new_features = dict()
-    features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
+    # features_index = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
+    features_index = ["snake_perc", "food_perc", "min_snake", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
 
     for i in range(len(features_index)):
       new_features[features_index[i]] = features[i]
@@ -63,26 +65,35 @@ if __name__ == '__main__':
  
   # Create customized and processed slither env
   #universe.configure_logging(False)
-  
   env = create_slither_env('features')
   env = Unvectorize(env)
   env.configure(fps=5.0, remotes=1, start_timeout=15 * 60, vnc_driver='go', vnc_kwargs={'encoding': 'tight', 'compress_level': 0, 'fine_quality_level': 50})
-
-  observation_n = env.reset()
-
-  ## init the q learning agent
   learning_agent = ApproximateQAgent()
   ## randomly init an array
+  episode = 1
+  steps = 100
+
   action_coord = random.choice(action_sheet)
+  for ep in range(episode):
+    for step in range(steps):
+      observation_n = env.reset()
+      action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
+      observation_n, reward_n, done_n, info = env.step([action])
+      features = dict_convert(observation_n.flatten())
+      learning_agent.update(action_coord ,reward_n, features, done_n)
+      action_coord = learning_agent.getAction(features)
+      learning_agent.getWeight()
+      env.render()
 
-  while True:
-    action = universe.spaces.PointerEvent(action_coord[0],action_coord[1])
+      if done_n:
+        stored_weights = open('weights.pickle', 'wb')
+        pickle.dump(learning_agent.weights, stored_weights )
+        stored_weights.close()
+        break
+  env.close()
 
-    observation_n, reward_n, done_n, info = env.step([action])
-    features = dict_convert(observation_n.flatten())
-    learning_agent.update(action_coord ,reward_n, features, done_n)
-    action_coord = learning_agent.getAction(features)
-    learning_agent.getWeight()
 
-    env.render()
+
+
+
 

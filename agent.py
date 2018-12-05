@@ -20,7 +20,8 @@ class ApproximateQAgent(object):
         #   *   s   *
         #     *   *
         #       *
-        self.features = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
+        # self.features = ["me_perc","snake_perc", "food_perc", "min_snake", "min_food", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
+        self.features = ["snake_perc", "food_perc", "min_snake", "food_leftTop", "food_rightTop", "food_leftBottom", "food_rightBottom"]
         self.resolution_points = 8
         self.degree_per_slice = 360/self.resolution_points
 
@@ -42,11 +43,10 @@ class ApproximateQAgent(object):
               self.weights[a][f] = 1
 
         for a in self.actions:
-          self.weights[a][4] = 100
-          self.weights[a][5] = 100
-          self.weights[a][6] = 100
-          self.weights[a][7] = 100
-          self.weights[a][8] = 100
+          self.weights[a]["food_leftTop"] = 100
+          self.weights[a]["food_rightTop"] = 100
+          self.weights[a]["food_leftBottom"] = 100
+          self.weights[a]["food_rightBottom"] = 100
 
     def getQValue(self, action, features):
         """
@@ -78,6 +78,8 @@ class ApproximateQAgent(object):
           reward_n = -100
         else:
           if reward == 0:
+            reward_n = -10
+          else:
             reward_n = reward * 10
 
         difference = reward_n + self.discount * self.getMaxQ(features) - self.getQValue(action, features)

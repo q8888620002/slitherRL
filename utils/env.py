@@ -371,8 +371,11 @@ class SlitherProcessor(object):
           direction[0] += 1
 
     # normalize the food density
-    direction = [float(i)/sum(direction) for i in direction]
-    return direction
+    if sum(direction) == 0:
+      return direction
+    else:
+      direction = [float(i)/sum(direction) for i in direction]
+      return direction
 
 class MaxAndSkipEnv(gym.Wrapper):
     def __init__(self, env, skip=4):

@@ -1,6 +1,7 @@
 import gym
 import universe  # register the universe environments
 import numpy as np
+import math
 import pyglet
 import matplotlib
 matplotlib.use("TkAgg")
@@ -313,19 +314,80 @@ class SlitherProcessor(object):
     me_inds = np.nonzero(me_layer)
     me_inds = zip(me_inds[0].tolist(),me_inds[1].tolist())
 
-    snake_dis = min([self.d(i) for i in snake_inds]) if snake_inds else max_dis
-    food_dis  = min([self.d(i) for i in food_inds]) if food_inds else max_dis 
+    coord=[]
+    for point in range(8):
+      degree = point*(360//8)
+      y = 30 * math.sin(math.radians(degree))
+      x = 30 * math.cos(math.radians(degree))
+      coord.append((270+x, 235+y))
 
-    min_snake = snake_dis*1.0/max_dis
-    min_food  = 1.0*(food_dis)/max_dis
+    snake_dis = food_dis = snake_50 = snake_100 = np.zeros(8)
 
-    action = self.dodge_snake(snake_inds, food_inds)
-    features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food])
+    for state in range(8):
+      snake_dis[state] = min([self.d(i, coord[state]) for i in snake_inds]) if snake_inds else max_dis
+      snake_dis[state] = snake_dis[state]*1.0/max_dis
+      food_dis[state]  = min([self.d(i, coord[state]) for i in food_inds]) if food_inds else max_dis
+      food_dis[state]  = 1.0*(max_dis - food_dis[state])/max_dis
+
+    snake_perc, food_perc = self.get_perc_in_area(frame)
+    snake_50 = self.snake_dis_in_area(snake_inds, 50)
+    snake_100 = self.snake_dis_in_area(snake_inds, 100)
+
+    #min_snake = snake_dis*1.0/max_dis
+    #min_food  = 1.0*(max_dis - food_dis)/max_dis
+
+    #action = self.dodge_snake(snake_inds, food_inds)
+    #features = np.array([me_perc , snake_perc, food_perc, min_snake, min_food, action[0], action[1]])
+
+    features = np.array([snake_dis, food_dis, snake_perc, food_perc, snake_50, snake_100])
 
     return features[:, np.newaxis, np.newaxis]
 
-  def d(self, ind):
-    return abs(270-ind[0]) + abs(235-ind[1])
+  def d(self, ind, state):
+    return abs(state[0]-ind[0]) + abs(state[1]-ind[1])
+
+  def e(self, ind):
+    return math.sqrt((270-ind[0])**2 + (235-ind[1])**2)
+
+  def get_perc_in_area(self, frame):
+    snake_perc = []
+    food_perc = []
+    x = ([271,520],[271,520],[187,352],[20,269],[20,269],[20,269],[187,352],[271,520])
+    y = ([186,285],[85,234],[85,234],[85,234],[186,285],[236,385],[236,385],[236,385])
+
+    for a in range(8):
+      snake_layer = frame[x[a][0]:x[a][1], y[a][0]:y[a][1], 0]
+      food_layer = frame[x[a][0]:x[a][1], y[a][0]:y[a][1], 2]
+
+      num_pix = snake_layer.shape[0]*snake_layer.shape[1]
+
+      snake_pix = np.count_nonzero(snake_layer)
+      food_pix = np.count_nonzero(food_layer)
+
+      snake_perc.append(1.0*snake_pix/num_pix)
+      food_perc.append(1.0*food_pix/num_pix)
+
+    return snake_perc, food_perc
+
+
+  def snake_dis_in_area(self, snake_inds, dis):
+    snake_dis = np.zeros(8)
+
+    x = ([271,520],[271,520],[187,352],[20,269],[20,269],[20,269],[187,352],[271,520])
+    y = ([186,285],[85,234],[85,234],[85,234],[186,285],[236,385],[236,385],[236,385])
+    action = list(range(8))
+    done=[]
+
+    for ind in snake_inds:
+      for a in action:
+        if ind[0] in range(x[a][0],x[a][1]) and ind[1] in range(y[a][0], y[a][1]):
+          if self.e(ind) <dis: 
+            snake_dis[a] = 1
+            done.append(a)
+      action = list(set(action) - set(done))
+      if len(action) == 0: break
+
+    return snake_dis
 
   ### get the nearest item to the center(snake head)
   def get_closest_loc(self, foodlist):
@@ -390,7 +452,7 @@ def create_slither_env(state_type):
 
   env = BlockingReset(env)
 
-  env = CropScreen(env, 300, 500, 84, 18)
+  env = CropScreen(env, 300, 500, 85, 20)
   #env = DiscreteToFixedKeysVNCActions(env, ['left', 'right', 'space', 'left space', 'right space'])
   env = EpisodeID(env)
   env = RenderWrapper(env, state_type)

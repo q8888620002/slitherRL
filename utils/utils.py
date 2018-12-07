@@ -1,3 +1,74 @@
+import math
+import pickle
+import csv
+
+def manhattanDistance( xy1, xy2 ):
+    "Returns the Manhattan distance between points xy1 and xy2"
+    return abs( xy1[0] - xy2[0] ) + abs( xy1[1] - xy2[1] )
+
+def euclideanDistance( xy1, xy2 ):
+    "Returns the Euclidean distance between points xy1 and xy2"
+    return math.sqrt(( xy1[0]-xy2[0] )**2 + ( xy1[1] - xy2[1])**2)
+
+
+# The snake moves to the directing of the mouse
+# but to output the direction to a neural network we need to break the output to more discrete values
+
+# the radius is the distance from the head of the snake to the mouse pointer(in pixel)
+radius = 30
+# This is the number of points we want around the head of the snake
+# Ex: With 8 points where the mouse can be positioned around the head of the snake
+# Note the distance from the point to the head is the same for all
+#       *
+#     *   *
+#   *   s   *
+#     *   *
+#       *
+# You can add more resolution to this if you want but it may increase learning time
+resolution_points = 8
+degree_per_slice = 360//resolution_points
+
+def create_actionList(num_action, radius):
+    coord=[]
+    for point in range(num_action):
+      degree = point*(360/num_action)
+      y = radius * math.sin(math.radians(degree))
+      x = radius * math.cos(math.radians(degree))
+      # (270, 235) is the head of the snake, center of the frame
+      coord.append((270+x, 235+y))
+
+    return coord
+
+### Convert observation numpy array into dictionary form with index 
+### ["me_perc","snake_perc", "food_perc", "min_snake", "min_food"]
+def dict_convert(features, features_index):
+
+    new_features = dict()
+    for i in range(len(features_index)):
+      new_features[features_index[i]] = features[i]
+    return new_features
+
+# redefine custom reward values
+def redefine_reward(reward_n, done_n):
+
+    if done_n: 
+        reward = -50
+    else:
+        reward = -1 if reward_n == 0 else reward_n * 2  
+    return reward
+
+# write output to csv file
+def append_to_csv(file_name, output):
+    myFile = open(file_name, 'a')  
+    with myFile: 
+        writer = csv.writer(myFile)
+        writer.writerow(output)
+
+# dump stored into pickle
+def dump_to_pickle(file_name, stored):
+    stored_weights = open(file_name, 'wb')
+    pickle.dump( stored , stored_weights)
+    stored_weights.close()
 
 class Counter(dict):
     """

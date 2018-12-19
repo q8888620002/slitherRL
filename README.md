@@ -1,5 +1,4 @@
-# RattLe: a Slither.io reinforcement learning agent
-##### Based on the previous work of [slither-rl-agent](https://github.com/zachabarnes/slither-rl-agent)
+#  a Slither.io reinforcement learning agent
 
 ### Installation Instructions 
 - Install [Conda](https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-16-04) 

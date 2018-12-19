@@ -32,6 +32,8 @@ if __name__ == '__main__':
   ## init the q learning agent
   # read in stored weight from previous games with pickle
   learning_agent = ApproximateQAgent()
+  
+  ######## Start a new agent with the previous train weight ########
  # learning_agent.weights = pickle.load(open('weights.pickle', 'rb'))
 
   # create coord_list with (36 coordinates, 30 radius), randomly move at the first actions

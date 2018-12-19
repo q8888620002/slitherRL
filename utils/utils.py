@@ -52,7 +52,7 @@ def dict_convert(features, features_index):
 def redefine_reward(reward_n, done_n):
 
     if done_n: 
-        reward = -
+        reward = -10
     else:
         reward = -1 if reward_n == 0 else reward_n * 2  
         

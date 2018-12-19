@@ -315,12 +315,12 @@ class SlitherProcessor(object):
     me_inds = np.nonzero(me_layer)
     me_inds = zip(me_inds[0].tolist(),me_inds[1].tolist())
 
-    snake_dis, snake_per = self.dis_per_in_area(snake_inds, 36)
-    food_dis, food_per = self.dis_per_in_area(food_inds, 36)
+    snake_dis, snake_per = self.dis_per_in_area(snake_inds, 8)
+    food_dis, food_per = self.dis_per_in_area(food_inds, 8)
     snake_50 = np.array([1. if i<=50 else 0. for i in snake_dis])
     snake_100 = np.array([1. if i<=100 else 0. for i in snake_dis])
 
-    n_area = 36
+    n_area = 8
     neighbor_snake_dis = neighbor_snake_per = np.zeros(n_area)
     neighbor_food_dis = neighbor_food_per = np.zeros(n_area)
 
@@ -330,8 +330,7 @@ class SlitherProcessor(object):
       neighbor_food_dis[a] = (food_dis[(a+n_area+1)%n_area] + food_dis[(a+n_area-1)%n_area])/2
       neighbor_food_per[a] = (food_per[(a+n_area+1)%n_area] + food_per[(a+n_area-1)%n_area])/2
 
-    features = np.array([snake_dis, food_dis, snake_per, food_per, snake_50, snake_100, 
-      neighbor_snake_dis, neighbor_snake_per, neighbor_food_dis, neighbor_food_per])
+    features = np.array([snake_dis, food_dis, snake_per, food_per, snake_50, snake_100])
 
     #min_snake = snake_dis*1.0/max_dis
     #min_food  = 1.0*(max_dis - food_dis)/max_dis

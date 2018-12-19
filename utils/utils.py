@@ -49,7 +49,7 @@ def dict_convert(features, features_index):
     return new_features
 
 # redefine custom reward values
-def redefine_reward(reward_n, done_n):
+def redefine_reward(reward_n, done_n, action, last_action):
 
     if done_n: 
         reward = -10

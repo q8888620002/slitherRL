@@ -13,7 +13,7 @@ class ApproximateQAgent(object):
         self.center_x = 270
         self.center_y = 235
         self.radius = 30
-        self.n_area = 12
+        self.n_area = 8
         # This is the number of points we want around the head of the snake
         # Ex: With 8 points where the mouse can be positioned around the head of the snake
         # Note the distance from the point to the head is the same for all
@@ -24,23 +24,19 @@ class ApproximateQAgent(object):
         #   5 *   * 7
         #       *
         #       6
-        self.features = ['snake_dis', 'food_dis', 'snake_perc', 'food_perc', 'snake_50', 'snake_100', 'neighbor_snake_dis', 'neighbor_snake_per', 'neighbor_food_dis', 'neighbor_food_per']
+        self.features = ['snake_dis', 'food_dis', 'snake_perc', 'food_perc', 'snake_50', 'snake_100']
         self.degree_per_slice = 360/self.n_area
 
         # Available actions in the game
         self.actions = utils.create_actionList(self.n_area, self.radius)
         self.discount = 0.8
-        self.alpha = 0.5
+        self.alpha = 0.2
         self.weights = {'snake_dis': 4, 
                         'food_dis': -2, 
                         'snake_perc': -4, 
                         'food_perc': 2, 
                         'snake_50': -10,
-                        'snake_100': -10,
-                        'neighbor_snake_dis': 2, 
-                        'neighbor_snake_per': -2, 
-                        'neighbor_food_dis': 1, 
-                        'neighbor_food_per': -1}
+                        'snake_100': -10}
 
     def getQValue(self, action, features):
         """

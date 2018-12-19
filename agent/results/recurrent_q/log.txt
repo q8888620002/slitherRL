@@ -1,9 +1,0 @@
-2018-11-27 11:09:22,546:ERROR: [0:localhost:5901] Waiting on rewarder: failed to complete WebSocket handshake. Retry in 1s (slept 0s/900s): connection was closed uncleanly (WebSocket connection upgrade failed (502 - BadGateway))
-2018-11-27 11:09:23,158:WARNING: From /Users/eeeeeeric/Desktop/harvard/slither/RattLe/agent/network.py:359: BasicLSTMCell.__init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
-Instructions for updating:
-This class is deprecated, please use tf.nn.rnn_cell.LSTMCell, which supports all the feature this cell currently has. Please replace the existing code with tf.nn.rnn_cell.LSTMCell(name='basic_lstm_cell').
-2018-11-27 11:09:27,354:INFO: Recording...
-2018-11-27 11:09:27,354:WARNING: Called reset on <Monitor<Unvectorize<RenderWrapper<EpisodeID<DiscreteToFixedKeysVNCActions<CropScreen<BlockingReset<Vision<Timer<Render<ThrottleVNCEnv<internet.SlitherIO-v0>>>>>>>>>>>> before configuring. Configuring automatically with default arguments
-2018-11-27 11:09:28,327:INFO: Killing and removing container: id=f561e30c015827ee71fe94ef0f977d78d70e04d0e18199ed94304b51911e6780
-2018-11-27 11:09:28,957:INFO: Killing and removing container: id=e1c5942dd753acc2b71685312f196f29176b17f421ec5a11363f2d5875539dbf
-2018-11-27 11:09:29,781:INFO: Finished writing results. You can upload them to the scoreboard via gym.upload('/Users/eeeeeeric/Desktop/harvard/slither/RattLe/agent/results/recurrent_q/monitor')

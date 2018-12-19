@@ -1,7 +1,0 @@
-2018-11-27 16:07:50,849:ERROR: [0:localhost:5901] Waiting on rewarder: failed to complete WebSocket handshake. Retry in 1s (slept 0s/900s): connection was closed uncleanly (WebSocket connection upgrade failed (502 - BadGateway))
-2018-11-27 16:07:51,867:ERROR: [0:localhost:5901] Waiting on rewarder: failed to complete WebSocket handshake. Retry in 3s (slept 1s/900s): connection was closed uncleanly (WebSocket connection upgrade failed (502 - BadGateway))
-2018-11-27 16:07:52,067:INFO: Recording...
-2018-11-27 16:07:52,067:WARNING: Called reset on <Monitor<Unvectorize<RenderWrapper<EpisodeID<DiscreteToFixedKeysVNCActions<CropScreen<BlockingReset<Vision<Timer<Render<ThrottleVNCEnv<internet.SlitherIO-v0>>>>>>>>>>>> before configuring. Configuring automatically with default arguments
-2018-11-27 16:07:52,186:INFO: Killing and removing container: id=e990873e9d0b335e86af168fb84afe03fc9997dcf3dfdcf385049f6ae9f97fb4
-2018-11-27 16:07:53,360:INFO: Killing and removing container: id=c32f9bccc977ab3cb83640e9b2e2d3dfa16d1ba2aa43bc4f913479576ae4d429
-2018-11-27 16:07:54,589:INFO: Finished writing results. You can upload them to the scoreboard via gym.upload('/Users/eeeeeeric/Desktop/harvard/slither/RattLe/agent/results/linear_q/monitor')
